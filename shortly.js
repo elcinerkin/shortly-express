@@ -15,7 +15,7 @@ app.configure(function() {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
   app.use(partials());
-  app.use(express.bodyParser())
+  app.use(express.bodyParser());
   app.use(express.static(__dirname + '/public'));
 });
 
@@ -71,6 +71,56 @@ app.post('/links', function(req, res) {
 /************************************************************/
 
 
+app.get('/login', function(req, res){
+  res.render('login');
+});
+
+app.post('/login', function(req, res){
+  var username = req.body.username;
+  var password = req.body.password;
+
+  new User({username:name}).fetch({require: true}).then(function(found){
+    if(found) {
+      res.send(200, found.attributes);
+    }
+    else {
+
+      var user = new User({
+        username : username,
+        password : password,
+        base_url : req.headers.origin
+      });
+
+      user.save().then(function(newUser) {
+        Users.add(newUser);
+        res.send(200, newUser);
+      });
+    }
+  });
+
+  // if user is in userDB table
+  //   redirect to login page
+  // else
+  //   get username and password
+  //   check if valid username and password
+  //   create a new user instance
+  //   save to the userDB
+  //   quit
+
+  // var user = new User({username : username, password : password});
+  // user.on('sync', function(){console.log("sync in progress")}, this);
+  // user.on('error', function(){console.log("error")}, this);
+  // user.save({});
+  res.send(200, "done");
+});
+
+app.get('/signup', function(req, res){
+  res.render('signup');
+});
+
+app.post('/signup', function(req, res){
+
+});
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
